@@ -1,6 +1,7 @@
 ﻿namespace Selector.mvu
 
 open Selector.mvu.DisplayModelTypes
+open Selector.mvu.Symbol
 
 module SymbolView =
     
@@ -28,17 +29,19 @@ module SymbolView =
             ]
     
     // WITH COMPONENT KEY BIND FOR CACHING 
-    let renderSymbol props dispatch :IView=
-        Component.create($"comp-{props.Id}-{props.renderCnt}", fun ctx ->
-            printfn "polygon %d render called" props.Id
-            let xPosition = getCompPos props "X"
-            let yPosition = getCompPos props "Y"
+    let renderSymbol (props: PolygonParameters) dispatch : Component=
+        Component (fun ctx ->
+            let props = ctx.useState props
+            printfn "polygon %d render called" props.Current.Id
+            let xPosition = getCompPos props.Current "X"
+            let yPosition = getCompPos props.Current "Y"
+            printfn "x %f y %f" xPosition yPosition
             ctx.attrs[
                 Component.renderTransform (
                     TranslateTransform(xPosition, yPosition)
                 )
             ]
-            drawComponent props dispatch
+            drawComponent props.Current dispatch
         )
     
      (*// STANDARD IMPLEMENTATION WITHOUT COMPONENT KEY BIND FOR CACHING 
@@ -78,7 +81,11 @@ module SymbolView =
                 Canvas.children (
                     state.polygonParameters
                     |> Array.map (fun param ->
-                        renderSymbol param dispatch
+                        ContentControl.create[
+                            ContentControl.content (
+                                renderSymbol param dispatch
+                            )
+                        ] :> IView
                     )
                     |> Array.toList
                 )
