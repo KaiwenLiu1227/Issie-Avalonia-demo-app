@@ -1,6 +1,7 @@
 ﻿namespace Selector.mvu
 
 open Selector.mvu.DisplayModelTypes
+open Selector.mvu.Symbol
 
 module SymbolView =
     
@@ -12,9 +13,12 @@ module SymbolView =
     open Avalonia.FuncUI.DSL
     open Avalonia.Media
     open Avalonia.FuncUI.Types
+    open Avalonia.FuncUI.Elmish.ElmishHook
     open SheetModel
     open SymbolHelper
     open DisplayModelTypes
+    
+
     
     let drawComponent polygonParameter dispatch=
             let points = genPoints polygonParameter.compType 20 20
@@ -28,17 +32,21 @@ module SymbolView =
             ]
     
     // WITH COMPONENT KEY BIND FOR CACHING 
-    let renderSymbol props dispatch :IView=
-        Component.create($"comp-{props.Id}-{props.renderCnt}", fun ctx ->
-            printfn "polygon %d render called" props.Id
-            let xPosition = getCompPos props "X"
-            let yPosition = getCompPos props "Y"
+    let renderSymbol id (_props: IWritable<PolygonParameters>) dispatch :IView=
+        let xPosition = getCompPos _props.Current "X"
+        printfn "position x %f dragged" xPosition
+
+        Component.create($"{id}", fun ctx ->
+            let props = ctx.usePassed _props
+            printfn "polygon %d render called" props.Current.Id
+            let xPosition = getCompPos props.Current "X"
+            let yPosition = getCompPos props.Current "Y"
             ctx.attrs[
                 Component.renderTransform (
                     TranslateTransform(xPosition, yPosition)
                 )
             ]
-            drawComponent props dispatch
+            drawComponent props.Current dispatch
         )
     
      (*// STANDARD IMPLEMENTATION WITHOUT COMPONENT KEY BIND FOR CACHING 
@@ -78,7 +86,8 @@ module SymbolView =
                 Canvas.children (
                     state.polygonParameters
                     |> Array.map (fun param ->
-                        renderSymbol param dispatch
+                        let prop: IWritable<PolygonParameters> = new State<PolygonParameters>(param)
+                        renderSymbol param.Id prop dispatch
                     )
                     |> Array.toList
                 )
