@@ -27,6 +27,7 @@ module SymbolView =
                 Component.onPointerPressed (fun args -> dispatch (OnPress polygonParameter.Id))
             ]
     
+    // WITH COMPONENT KEY BIND FOR CACHING 
     let renderSymbol props dispatch :IView=
         Component.create($"comp-{props.Id}-{props.renderCnt}", fun ctx ->
             printfn "polygon %d render called" props.Id
@@ -39,6 +40,20 @@ module SymbolView =
             ]
             drawComponent props dispatch
         )
+    
+     (*// STANDARD IMPLEMENTATION WITHOUT COMPONENT KEY BIND FOR CACHING 
+    let renderSymbol props dispatch :IView=
+        printfn "polygon %d render called" props.Id
+        let xPosition = getCompPos props "X"
+        let yPosition = getCompPos props "Y"
+        Viewbox.create[
+            Viewbox.renderTransform (
+                TranslateTransform(xPosition, yPosition)
+            )
+            Viewbox.child (
+               drawComponent props dispatch 
+            )
+        ]   *) 
 
 
     let symbolView state dispatch =
