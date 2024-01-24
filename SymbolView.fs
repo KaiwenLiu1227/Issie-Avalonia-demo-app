@@ -29,13 +29,15 @@ module SymbolView =
             ]
     
     // WITH COMPONENT KEY BIND FOR CACHING 
-    let renderSymbol (props: PolygonParameters) dispatch : Component=
+    let renderSymbol (initialProps: PolygonParameters) dispatch : Component=
         Component (fun ctx ->
-            let props = ctx.useState props
+            let props = ctx.useState initialProps
             printfn "polygon %d render called" props.Current.Id
             let xPosition = getCompPos props.Current "X"
             let yPosition = getCompPos props.Current "Y"
-            printfn "x %f y %f" xPosition yPosition
+            // printfn "x %f y %f" xPosition yPosition
+            printfn "%d render called" initialProps.renderCnt
+
             ctx.attrs[
                 Component.renderTransform (
                     TranslateTransform(xPosition, yPosition)
