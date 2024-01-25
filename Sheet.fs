@@ -13,7 +13,7 @@ module SheetModel =
     open SymbolHelper
     open DisplayModelTypes
 
-    type Model =
+    type State =
         { polygonParameters: PolygonParameters[]
           compNum: int
           rotation: float
@@ -77,7 +77,7 @@ module SheetModel =
             if state.holdingState then
                 let oldPos = state.polygonParameters.[state.compNum].compPos
                 if newPos <> oldPos then
-                        let updatedPolygonParam =
+                        let updatedPolygonParam = 
                             {state.polygonParameters.[state.compNum] with
                                   renderCnt = state.polygonParameters.[state.compNum].renderCnt + 1
                                   compPos = newPos
@@ -98,7 +98,6 @@ module SheetModel =
                 holdingState = false 
             }
         | OnPress compPressed ->
-            printf "press"
             { state with
                 compNum = compPressed
                 holdingState = true 
