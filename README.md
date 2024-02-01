@@ -45,3 +45,13 @@ dotnet run
 ```
 
 This will start the application.
+
+## Build release version for multi-platform app
+
+To build release version of the project, execute the following command:
+
+```bash
+dotnet publish -c Release --runtime linux-x64
+```
+
+replace `linux-x64` with your target platform like `win-x64` or `osx-x64`
